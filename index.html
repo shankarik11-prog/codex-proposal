@@ -1,660 +1,465 @@
-
+L
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love Proposal 💖</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>flip the switch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-  :root {
-    --bg-dark: #0d0d1a;
-    --bg-card-dark: rgba(20, 10, 35, 0.85);
-    --accent: #ff5c8d;
-    --accent2: #c2185b;
-    --text-dark: #f0d6e8;
-    --border-dark: rgba(255,92,141,0.3);
-
-    --bg-light: #fff0f5;
-    --bg-card-light: rgba(255,255,255,0.75);
-    --text-light: #c2185b;
-    --border-light: rgba(214,51,108,0.3);
+  :root{
+    /* dark room tokens */
+    --dark-bg-1:#0b0710;
+    --dark-bg-2:#160c1c;
+    --wall:#1e1424;
+    --wall-shadow:#0a0610;
+    --ember:#ff2e63;
+    --ember-dim:#5a1030;
+ 
+    /* bright valentine tokens */
+    --bright-1:#fff1f4;
+    --bright-2:#ffd4e0;
+    --rose:#e5006e;
+    --rose-deep:#a3004f;
+    --gold:#f4b942;
+    --ink:#3a0d22;
+ 
+    --display:'Playfair Display', serif;
+    --body:'Poppins', sans-serif;
   }
-
-  html, body {
-    height: 100%;
-    min-height: 100vh;
-    overflow-x: hidden;
+ 
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    min-height:100vh;
+    font-family:var(--body);
+    background:radial-gradient(ellipse at 50% 20%, var(--dark-bg-2), var(--dark-bg-1) 70%);
+    color:#f3e9ee;
+    overflow-x:hidden;
+    transition:background 1.1s ease;
+    position:relative;
   }
-
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 1s ease;
-    position: relative;
-    perspective: 1200px;
+  body.lights-on{
+    background:radial-gradient(ellipse at 50% 0%, var(--bright-2), var(--bright-1) 65%);
+    color:var(--ink);
   }
-
-  body.dark {
-    background: radial-gradient(ellipse at 30% 20%, #1a0a2e 0%, #0d0d1a 60%, #0a0014 100%);
+ 
+  /* ---------- floating hearts ambiance ---------- */
+  #heartsBg{
+    position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0;
   }
-  body.light {
-    background: radial-gradient(45deg, #ff9a9e, #fecfef, #fad0c4, #ffdde1);
-    animation: gradientShift 10s ease infinite;
-    background-size: 300% 300%;
-  }
-  @keyframes gradientShift {
-    0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%}
-  }
-
-  /* DEPTH BLOBS */
-  .blob { position:fixed; border-radius:50%; filter:blur(60px); pointer-events:none; transition:all 1s ease; }
-  .blob1 { width:350px; height:350px; top:5%; left:5%; }
-  .blob2 { width:250px; height:250px; bottom:8%; right:8%; }
-  .blob3 { width:200px; height:200px; top:55%; left:65%; }
-  body.dark .blob1 { background:rgba(120,0,80,0.4); }
-  body.dark .blob2 { background:rgba(60,0,100,0.3); }
-  body.dark .blob3 { background:rgba(180,20,100,0.2); }
-  body.light .blob1 { background:rgba(255,100,150,0.3); }
-  body.light .blob2 { background:rgba(255,200,230,0.4); }
-  body.light .blob3 { background:rgba(255,150,180,0.25); }
-
-  #bgHearts { position:fixed; inset:0; pointer-events:none; z-index:0; }
-  .bg-heart {
-    position:absolute; bottom:-10%; opacity:0.7;
+  .heart-particle{
+    position:absolute; bottom:-10%; font-size:1.2rem; opacity:.25;
     animation:floatUp linear infinite;
-    pointer-events:none;
+    filter:blur(.2px);
   }
-  @keyframes floatUp {
-    0%{transform:translateY(0) rotate(0deg);opacity:0}
-    10%{opacity:0.8} 90%{opacity:0.8}
-    100%{transform:translateY(-115vh) rotate(360deg);opacity:0}
+  body.lights-on .heart-particle{ opacity:.35; }
+  @keyframes floatUp{
+    0%{ transform:translateY(0) rotate(0deg); opacity:0; }
+    10%{ opacity:.3; }
+    100%{ transform:translateY(-120vh) rotate(40deg); opacity:0; }
   }
-
-  /* ===== SWITCH WRAPPER ===== */
-  #switchWrap {
-    display:flex; flex-direction:column; align-items:center; gap:18px;
-    position:relative; z-index:10;
+ 
+  main#app{
+    position:relative; z-index:1;
+    min-height:100vh;
+    display:flex; align-items:center; justify-content:center;
+    padding:2rem 1.25rem;
+    perspective:1200px;
   }
-  .switch-label {
-    color:#ff5c8d; font-size:14px; letter-spacing:2px; text-transform:uppercase;
-    opacity:0.8; font-weight:600;
+ 
+  .stage{
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    width:100%;
+    max-width:620px;
+    animation:riseIn .8s ease both;
   }
-
-  /* 3D TOGGLE SWITCH */
-  .toggle-3d {
-    width:90px; height:44px; position:relative; cursor:pointer;
+  .stage.active{ display:flex; }
+ 
+  @keyframes riseIn{
+    from{ opacity:0; transform:translateY(28px) rotateX(6deg); }
+    to{ opacity:1; transform:translateY(0) rotateX(0deg); }
+  }
+ 
+  /* ---------- STAGE 1: wall + switch ---------- */
+  .wall-wrap{ perspective:900px; margin-bottom:1.5rem; }
+  .wall{
+    width:min(70vw,260px);
+    height:min(70vw,260px);
+    background:linear-gradient(155deg,var(--wall),var(--wall-shadow));
+    border-radius:14px;
+    box-shadow:
+      0 30px 60px rgba(0,0,0,.55),
+      inset 0 0 0 2px rgba(255,255,255,.03);
+    display:flex; align-items:center; justify-content:center;
+    transform:rotateY(-8deg) rotateX(4deg);
+    transition:transform .6s ease;
+  }
+  .wall-wrap:hover .wall{ transform:rotateY(-2deg) rotateX(1deg); }
+ 
+  .switch-plate{
+    width:96px; height:150px;
+    background:linear-gradient(160deg,#efe7ea,#cfc3c9);
+    border-radius:10px;
+    box-shadow:0 12px 22px rgba(0,0,0,.5), inset 0 0 0 3px rgba(0,0,0,.08);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
     transform-style:preserve-3d;
   }
-  .toggle-3d input { display:none; }
-  .toggle-track {
-    width:100%; height:100%; border-radius:30px; position:relative;
-    background:linear-gradient(145deg,#1a0030,#2d0050);
-    border:2px solid rgba(255,92,141,0.4);
-    box-shadow:0 8px 20px rgba(0,0,0,0.6), inset 0 2px 4px rgba(0,0,0,0.5);
-    transition:all 0.5s ease;
-    transform-style:preserve-3d;
+  .switch-rocker{
+    width:52px; height:96px;
+    background:linear-gradient(180deg,#fff,#e7dde1);
+    border-radius:8px;
+    box-shadow:0 6px 12px rgba(0,0,0,.35), inset 0 -3px 4px rgba(0,0,0,.1);
+    position:relative;
+    transform-origin:center;
+    transform:rotateX(22deg) translateY(-18px);
+    transition:transform .35s cubic-bezier(.4,1.6,.4,1), box-shadow .35s ease;
   }
-  .toggle-3d input:checked ~ .toggle-track {
-    background:linear-gradient(145deg,#ff5c8d,#c2185b);
-    border-color:rgba(255,180,210,0.6);
-    box-shadow:0 8px 25px rgba(255,92,141,0.5), inset 0 2px 4px rgba(0,0,0,0.3), 0 0 30px rgba(255,92,141,0.3);
+  .switch-rocker::after{
+    content:"";
+    position:absolute; left:50%; top:10px; width:20px; height:4px;
+    background:var(--ember-dim); border-radius:2px; transform:translateX(-50%);
+    transition:background .35s ease;
   }
-  .toggle-thumb {
-    width:34px; height:34px; border-radius:50%;
-    background:linear-gradient(145deg,#ffffff,#e0e0e0);
-    position:absolute; top:3px; left:4px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.2);
-    transition:transform 0.45s cubic-bezier(0.175,0.885,0.32,1.275);
-    transform:translateZ(6px);
+  body.lights-on .switch-rocker{
+    transform:rotateX(-22deg) translateY(18px);
+    box-shadow:0 2px 6px rgba(0,0,0,.25), inset 0 3px 4px rgba(0,0,0,.12);
   }
-  .toggle-3d input:checked ~ .toggle-track .toggle-thumb {
-    transform:translateX(46px) translateZ(6px);
-    background:linear-gradient(145deg,#fff,#ffd6e8);
+  body.lights-on .switch-rocker::after{ background:var(--rose); }
+ 
+  .hint{
+    font-size:.85rem; letter-spacing:.12em; text-transform:uppercase;
+    opacity:.55; margin-top:.5rem;
   }
-  .toggle-track::before {
-    content:'OFF'; position:absolute; right:9px; top:50%;
-    transform:translateY(-50%); font-size:10px; font-weight:700;
-    color:rgba(255,255,255,0.5); letter-spacing:1px;
-    transition:opacity 0.3s;
+ 
+  /* ---------- STAGE 2: form ---------- */
+  .title-3d{
+    font-family:var(--display);
+    font-size:clamp(1.8rem,5vw,2.6rem);
+    margin:0 0 1.5rem;
+    text-shadow:0 1px 0 rgba(255,255,255,.5), 0 3px 0 var(--gold), 0 8px 18px rgba(163,0,79,.25);
   }
-  .toggle-3d input:checked ~ .toggle-track::before { content:'ON'; left:9px; right:auto; color:rgba(255,255,255,0.9); }
-
-  /* ===== SCREENS ===== */
-  .screen {
-    display:none; position:relative; z-index:5;
-    animation:screenIn 0.7s cubic-bezier(0.175,0.885,0.32,1.275);
+  .form-card{
+    width:100%;
+    background:rgba(255,255,255,.55);
+    border:1px solid rgba(255,255,255,.7);
+    border-radius:18px;
+    padding:1.75rem;
+    backdrop-filter:blur(6px);
+    box-shadow:0 20px 40px rgba(163,0,79,.12);
+    display:flex; flex-direction:column; gap:1rem;
   }
-  .screen.active { display:flex; flex-direction:column; align-items:center; }
-  @keyframes screenIn {
-    0%{transform:translateZ(-300px) rotateX(20deg) scale(0.7);opacity:0}
-    100%{transform:translateZ(0) rotateX(0) scale(1);opacity:1}
+  .form-card label{
+    text-align:left; font-size:.8rem; font-weight:500; color:var(--rose-deep);
+    display:flex; flex-direction:column; gap:.35rem;
   }
-
-  /* ===== CARD ===== */
-  .card {
-    background:var(--bg-card-dark);
-    backdrop-filter:blur(20px) saturate(160%);
-    -webkit-backdrop-filter:blur(20px) saturate(160%);
-    border:1px solid var(--border-dark);
-    border-radius:24px; padding:48px 44px;
-    text-align:center; max-width:440px; width:90vw;
-    box-shadow:0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.1);
-    transform-style:preserve-3d;
-    transition:background 1s, border 1s;
+  .form-card input, .form-card textarea{
+    font-family:var(--body);
+    font-size:1rem;
+    padding:.7rem .9rem;
+    border-radius:10px;
+    border:1.5px solid #f1c1d4;
+    background:#fff;
+    color:var(--ink);
+    resize:vertical;
   }
-  body.light .card {
-    background:var(--bg-card-light);
-    border-color:var(--border-light);
-    box-shadow:0 20px 60px rgba(214,51,108,0.2), inset 0 1px 0 rgba(255,255,255,0.8);
+  .form-card input:focus, .form-card textarea:focus{
+    outline:none; border-color:var(--rose);
   }
-
-  /* ===== TYPOGRAPHY ===== */
-  h1 {
-    font-size:28px; font-weight:800; letter-spacing:0.5px;
-    background:linear-gradient(90deg,#ff5c8d,#ff9fc3,#ff5c8d);
-    background-size:200% auto;
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-    animation:shine 3s linear infinite;
-    margin-bottom:8px; transform:translateZ(40px);
+ 
+  /* ---------- buttons ---------- */
+  .btn{
+    font-family:var(--body); font-weight:600; font-size:1rem;
+    padding:.8rem 1.8rem; border-radius:999px; border:none; cursor:pointer;
+    transition:transform .15s ease, box-shadow .15s ease, opacity .2s ease;
   }
-  @keyframes shine {
-    0%{background-position:0% center} 100%{background-position:200% center}
+  .btn:active{ transform:scale(.96); }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; }
+  .btn-primary{
+    background:linear-gradient(135deg,var(--rose),var(--rose-deep));
+    color:#fff; box-shadow:0 10px 22px rgba(163,0,79,.35);
   }
-
-  .subtitle {
-    font-size:16px; transform:translateZ(30px);
-    transition:color 1s;
+  .btn-secondary{
+    background:#fff; color:var(--rose-deep); border:1.5px solid var(--rose);
   }
-  body.dark .subtitle { color:rgba(240,214,232,0.7); }
-  body.light .subtitle { color:#d6336c; }
-
-  .heart-icon {
-    font-size:54px; display:inline-block;
-    transform:translateZ(60px);
-    animation:beat 1s infinite;
-    filter:drop-shadow(0 10px 15px rgba(214,51,108,0.5));
-    margin-bottom:12px;
+  .btn-yes{
+    background:linear-gradient(135deg,#ff5c8a,var(--rose));
+    color:#fff; box-shadow:0 10px 24px rgba(229,0,110,.4);
+    font-size:1.1rem; padding:.9rem 2.4rem;
   }
-  @keyframes beat {
-    0%,100%{transform:translateZ(60px) scale(1)}
-    50%{transform:translateZ(90px) scale(1.25)}
+  .btn-no{
+    background:#fff; color:#8a8a8a; border:1.5px solid #ddd;
+    position:relative; z-index:5;
   }
-
-  /* ===== FORM ===== */
-  .form-group { margin:14px 0; text-align:left; }
-  .form-group label {
-    display:block; font-size:12px; font-weight:700;
-    letter-spacing:1.5px; text-transform:uppercase;
-    margin-bottom:6px; color:#ff5c8d;
+  .btn-row{
+    display:flex; gap:1.2rem; margin-top:2rem; justify-content:center;
+    position:relative; min-height:70px; width:100%; flex-wrap:wrap;
   }
-  .form-group input, .form-group textarea {
-    width:100%; padding:12px 16px;
-    border-radius:12px; border:1.5px solid rgba(255,92,141,0.3);
-    font-size:15px; font-family:inherit; outline:none;
-    transition:border 0.3s, box-shadow 0.3s, background 1s, color 1s;
-    resize:none;
+ 
+  /* ---------- STAGE 3: ask ---------- */
+  .ask-3d{ transform-style:preserve-3d; }
+  .line{
+    font-family:var(--display);
+    margin:.3rem 0;
+    text-shadow:0 1px 0 rgba(255,255,255,.6), 0 4px 0 var(--gold), 0 10px 20px rgba(163,0,79,.3);
   }
-  body.dark .form-group input,
-  body.dark .form-group textarea {
-    background:rgba(255,255,255,0.07); color:#f0d6e8;
+  .hi{ font-size:clamp(1.6rem,5vw,2.2rem); font-weight:600; }
+  .love{
+    font-size:clamp(2.4rem,9vw,4rem); font-weight:900; color:var(--rose);
+    text-shadow:0 1px 0 #fff, 0 5px 0 var(--gold), 0 16px 30px rgba(163,0,79,.4);
+    letter-spacing:.02em;
   }
-  body.light .form-group input,
-  body.light .form-group textarea {
-    background:rgba(255,255,255,0.8); color:#c2185b;
+  .q{ font-size:clamp(1.3rem,4vw,1.8rem); font-weight:500; }
+  .by{ font-style:italic; opacity:.75; font-size:.85em; }
+ 
+  /* ---------- STAGE 4: reveal ---------- */
+  .reveal-line{
+    font-size:clamp(1.6rem,5vw,2.3rem); font-weight:700; margin-bottom:1.5rem;
   }
-  .form-group input:focus, .form-group textarea:focus {
-    border-color:#ff5c8d;
-    box-shadow:0 0 0 3px rgba(255,92,141,0.2);
+  .comment-card{
+    font-family:var(--display); font-style:italic;
+    font-size:clamp(1.1rem,3.2vw,1.4rem);
+    background:rgba(255,255,255,.6);
+    border:1px solid rgba(255,255,255,.8);
+    border-radius:16px; padding:1.6rem 1.8rem;
+    box-shadow:0 18px 34px rgba(163,0,79,.18);
+    max-width:520px; margin-bottom:2rem;
+    transform:rotateX(4deg);
   }
-  .form-group input::placeholder,
-  .form-group textarea::placeholder { color:rgba(200,150,180,0.5); }
-
-  /* ===== BUTTONS ===== */
-  .btn-primary {
-    width:100%; padding:14px; margin-top:20px;
-    background:linear-gradient(135deg,#ff7aa2,#ff5c8d 60%,#d6336c);
-    color:#fff; font-size:17px; font-weight:700;
-    border:none; border-radius:30px; cursor:pointer;
-    transform-style:preserve-3d; transform:translateZ(50px);
-    box-shadow:0 6px 0 #8f0030, 0 10px 20px rgba(255,92,141,0.4);
-    transition:transform 0.15s, box-shadow 0.15s;
-    letter-spacing:0.5px;
-    animation:pulseGlow 1.8s ease infinite;
+  .link-box{
+    display:flex; gap:.6rem; margin-top:1.4rem; width:100%; flex-wrap:wrap; justify-content:center;
   }
-  @keyframes pulseGlow {
-    0%,100%{box-shadow:0 6px 0 #8f0030,0 10px 20px rgba(255,92,141,0.4),0 0 0 0 rgba(255,92,141,0.5)}
-    50%{box-shadow:0 6px 0 #8f0030,0 10px 20px rgba(255,92,141,0.4),0 0 0 14px rgba(255,92,141,0)}
+  .link-box.hidden{ display:none; }
+  #linkOutput{
+    flex:1; min-width:200px; padding:.7rem .9rem; border-radius:10px;
+    border:1.5px solid #f1c1d4; font-family:var(--body); font-size:.85rem;
   }
-  .btn-primary:hover { transform:translateZ(50px) translateY(-3px) scale(1.04); }
-  .btn-primary:active { transform:translateZ(50px) translateY(2px) scale(0.97); box-shadow:0 2px 0 #8f0030,0 4px 8px rgba(255,92,141,0.3); }
-
-  .btn-generate {
-    padding:12px 28px; margin-top:16px;
-    background:linear-gradient(135deg,#a855f7,#7c3aed);
-    color:#fff; font-size:15px; font-weight:700;
-    border:none; border-radius:30px; cursor:pointer;
-    box-shadow:0 5px 0 #4c1d95, 0 10px 20px rgba(124,58,237,0.4);
-    transition:all 0.15s;
-    animation:pulseGlowPurple 1.8s ease infinite;
-  }
-  @keyframes pulseGlowPurple {
-    0%,100%{box-shadow:0 5px 0 #4c1d95,0 10px 20px rgba(124,58,237,0.4),0 0 0 0 rgba(168,85,247,0.5)}
-    50%{box-shadow:0 5px 0 #4c1d95,0 10px 20px rgba(124,58,237,0.4),0 0 0 14px rgba(168,85,247,0)}
-  }
-  .btn-generate:hover { transform:translateY(-3px) scale(1.06); }
-  .btn-generate:active { transform:translateY(2px) scale(0.97); }
-
-  /* ===== YES/NO BUTTONS ===== */
-  .proposal-buttons { position:relative; height:80px; margin-top:28px; }
-  #yesBtn {
-    padding:13px 32px; font-size:17px; font-weight:700;
-    border:none; border-radius:30px; cursor:pointer;
-    background:linear-gradient(135deg,#ff7aa2,#ff5c8d 60%,#d6336c);
-    color:#fff; position:relative;
-    box-shadow:0 6px 0 #8f0030,0 10px 18px rgba(255,92,141,0.5);
-    animation:pulseGlow 1.6s ease infinite;
-    transition:transform 0.15s, box-shadow 0.15s;
-  }
-  #yesBtn:hover { transform:translateY(-4px) rotateX(8deg) scale(1.08); }
-  #yesBtn:active { transform:translateY(2px) scale(0.96); box-shadow:0 2px 0 #8f0030,0 4px 8px rgba(255,92,141,0.4); }
-
-  #noBtn {
-    padding:13px 32px; font-size:17px; font-weight:700;
-    border:none; border-radius:30px; cursor:pointer;
-    position:absolute; top:0; left:155px;
-    background:linear-gradient(135deg,#2a2a3e,#1a1a2e);
-    color:#aaa;
-    box-shadow:0 4px 0 #000,0 8px 14px rgba(0,0,0,0.4);
-    transition:top 0.3s ease, left 0.3s ease, transform 0.15s;
-  }
-  body.light #noBtn {
-    background:linear-gradient(135deg,#e0e0e0,#ccc);
-    color:#666;
-  }
-  #noBtn:hover { transform:scale(1.05); }
-
-  /* ===== PROPOSAL TEXT ===== */
-  .proposal-name {
-    font-size:30px; font-weight:900; margin-bottom:6px;
-    transform:translateZ(50px);
-    background:linear-gradient(90deg,#ff5c8d,#ff9fc3,#ff5c8d);
-    background-size:200% auto;
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-    animation:shine 3s linear infinite;
-  }
-  .proposal-text {
-    font-size:19px; font-weight:600; margin:8px 0;
-    transform:translateZ(35px);
-    transition:color 1s;
-  }
-  body.dark .proposal-text { color:#f0d6e8; }
-  body.light .proposal-text { color:#c2185b; }
-
-  /* ===== RESULT ===== */
-  #resultText {
-    font-size:22px; font-weight:800; color:#ff5c8d;
-    margin:12px 0; transform:translateZ(50px);
-    animation:popIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275);
-  }
-  @keyframes popIn {
-    0%{opacity:0;transform:translateZ(50px) scale(0.3) rotate(-10deg)}
-    60%{opacity:1;transform:translateZ(50px) scale(1.1) rotate(3deg)}
-    100%{opacity:1;transform:translateZ(50px) scale(1) rotate(0)}
-  }
-  #commentDisplay {
-    font-size:15px; padding:14px 18px;
-    border-radius:14px; margin:10px 0;
-    border:1px solid rgba(255,92,141,0.3);
-    font-style:italic; line-height:1.6;
-    transition:background 1s, color 1s;
-    animation:popIn 0.6s ease 0.2s both;
-  }
-  body.dark #commentDisplay { background:rgba(255,92,141,0.1); color:#f0d6e8; }
-  body.light #commentDisplay { background:rgba(255,92,141,0.08); color:#c2185b; }
-
-  /* ===== LINK BOX ===== */
-  #linkBox {
-    display:none; margin-top:16px; padding:14px;
-    border-radius:14px; border:1.5px solid rgba(168,85,247,0.4);
-    font-size:12px; word-break:break-all;
-    transition:background 1s, color 1s;
-    animation:popIn 0.5s ease;
-  }
-  body.dark #linkBox { background:rgba(124,58,237,0.15); color:#d8b4fe; }
-  body.light #linkBox { background:rgba(168,85,247,0.1); color:#7c3aed; }
-  #linkBox a { color:inherit; text-decoration:underline; }
-  .copy-btn {
-    margin-top:10px; padding:8px 18px; font-size:13px; font-weight:700;
-    background:rgba(168,85,247,0.3); color:#d8b4fe;
-    border:1px solid rgba(168,85,247,0.5); border-radius:20px;
-    cursor:pointer; transition:all 0.2s;
-  }
-  .copy-btn:hover { background:rgba(168,85,247,0.5); }
-
-  /* ===== SWITCH SCREEN LAYOUT ===== */
-  #switchScreen {
-    display:flex; flex-direction:column; align-items:center;
-    gap:24px; position:relative; z-index:10;
-    animation:screenIn 0.8s cubic-bezier(0.175,0.885,0.32,1.275);
-  }
-  .brand {
-    font-size:13px; letter-spacing:3px; text-transform:uppercase;
-    color:rgba(255,92,141,0.6); font-weight:600; margin-bottom:4px;
-  }
-  #mainTitle {
-    font-size:36px; font-weight:900;
-    background:linear-gradient(90deg,#ff5c8d,#a855f7,#ff5c8d);
-    background-size:200% auto;
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-    animation:shine 3s linear infinite;
-    text-align:center; line-height:1.2;
-  }
-  .tagline { color:rgba(240,214,232,0.5); font-size:13px; letter-spacing:1px; }
-
-  /* ===== STAGE (3D tilt container) ===== */
-  .stage {
-    transform-style:preserve-3d;
-    transition:transform 0.1s ease-out;
-  }
-
-  /* ===== CONFETTI ===== */
-  .confetti {
-    position:fixed; top:-10%; font-size:20px;
-    animation:confettiFall linear forwards;
-    pointer-events:none; z-index:999;
-  }
-  @keyframes confettiFall {
-    0%{transform:translateY(0) rotate(0deg) rotateY(0deg);opacity:1}
-    100%{transform:translateY(110vh) rotate(540deg) rotateY(360deg);opacity:0.9}
-  }
-
-  .hidden { display:none !important; }
-
-  /* STARS in dark background */
-  .star {
-    position:fixed; border-radius:50%;
-    background:white; pointer-events:none;
-    animation:twinkle ease infinite;
-  }
-  @keyframes twinkle {
-    0%,100%{opacity:0.2;transform:scale(1)}
-    50%{opacity:1;transform:scale(1.5)}
+ 
+  @media (prefers-reduced-motion: reduce){
+    *{ animation:none !important; transition:none !important; }
   }
 </style>
 </head>
-<body class="dark">
-
-<div class="blob blob1"></div>
-<div class="blob blob2"></div>
-<div class="blob blob3"></div>
-<div id="bgHearts"></div>
-<div id="stars"></div>
-
-<!-- SWITCH SCREEN -->
-<div id="switchScreen">
-  <div class="brand">💖 Love Proposal</div>
-  <div id="mainTitle">Create Your<br>Love Story</div>
-  <div class="tagline">Turn on to begin your journey</div>
-  <div id="switchWrap">
-    <label class="toggle-3d">
-      <input type="checkbox" id="mainSwitch">
-      <div class="toggle-track">
-        <div class="toggle-thumb"></div>
-      </div>
-    </label>
-    <div class="switch-label" id="switchLabel">Switch ON to Start</div>
-  </div>
-</div>
-
-<!-- FORM SCREEN -->
-<div class="screen stage" id="formScreen">
-  <div class="card">
-    <div class="heart-icon">💖</div>
-    <h1>Your Love Story</h1>
-    <p class="subtitle" style="margin-bottom:22px;">Fill in the details below</p>
-    <div class="form-group">
-      <label>Your Name</label>
-      <input type="text" id="yourName" placeholder="Enter your name...">
-    </div>
-    <div class="form-group">
-      <label>Lover's Name</label>
-      <input type="text" id="loverName" placeholder="Enter their name...">
-    </div>
-    <div class="form-group">
-      <label>Your Special Message</label>
-      <textarea id="commentText" rows="3" placeholder="Write something sweet..."></textarea>
-    </div>
-    <button class="btn-primary" onclick="startProposal()">💕 Start</button>
-  </div>
-</div>
-
-<!-- PROPOSAL SCREEN -->
-<div class="screen stage" id="proposalScreen">
-  <div class="card">
-    <div class="heart-icon">💖</div>
-    <div class="proposal-name" id="displayName">Lover</div>
-    <div class="proposal-text">I Love You 💕</div>
-    <div class="proposal-text">Will you accept me?</div>
-    <div class="proposal-buttons" id="propButtons">
-      <button id="yesBtn" onclick="clickYes()">Yes 😍</button>
-      <button id="noBtn" onclick="dodgeNo()">No 😢</button>
-    </div>
-    <div id="resultBlock" class="hidden">
-      <div id="resultText">I know you will love me too! 💕</div>
-      <div id="commentDisplay"></div>
-      <button class="btn-generate" onclick="generateLink()">🔗 Generate Shareable Link</button>
-      <div id="linkBox">
-        <div style="font-weight:700;margin-bottom:6px;">🔗 Share this link with your lover:</div>
-        <a id="generatedLink" href="#" target="_blank"></a>
-        <div><button class="copy-btn" onclick="copyLink()">📋 Copy Link</button></div>
+<body>
+ 
+<div id="heartsBg"></div>
+ 
+<main id="app">
+ 
+  <section id="stageSwitch" class="stage active">
+    <div class="wall-wrap">
+      <div class="wall">
+        <div class="switch-plate" id="switchPlate" role="button" tabindex="0" aria-label="Flip the light switch">
+          <div class="switch-rocker" id="switchRocker"></div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
-
-<!-- LOVER SCREEN (shown when opened via shared link) -->
-<div class="screen stage" id="loverScreen">
-  <div class="card">
-    <div class="heart-icon">💖</div>
-    <div class="proposal-name" id="loverDisplayName">Lover</div>
-    <div class="proposal-text">I Love You 💕</div>
-    <div class="proposal-text">Will you accept me?</div>
-    <div class="proposal-buttons" id="loverButtons">
-      <button id="loverYesBtn" onclick="loverClickYes()">Yes 😍</button>
-      <button id="loverNoBtn" onclick="loverDodgeNo()">No 😢</button>
+    <p class="hint">flip the switch to begin</p>
+  </section>
+ 
+  <section id="stageForm" class="stage">
+    <h1 class="title-3d">let's set the scene</h1>
+    <div class="form-card">
+      <label>Your name
+        <input id="inpName1" maxlength="30" placeholder="e.g. Arjun" autocomplete="off" />
+      </label>
+      <label>Their name
+        <input id="inpName2" maxlength="30" placeholder="e.g. Meera" autocomplete="off" />
+      </label>
+      <label>A little note (optional)
+        <textarea id="inpComment" maxlength="200" rows="3" placeholder="Write something only they'd understand..."></textarea>
+      </label>
+      <button id="btnNext" class="btn btn-primary" disabled>Next</button>
     </div>
-    <div id="loverResultBlock" class="hidden">
-      <div id="loverResultText">I know you will accept me! 💕</div>
-      <div id="loverCommentDisplay"></div>
+  </section>
+ 
+  <section id="stageAsk" class="stage">
+    <div class="ask-3d">
+      <p class="line hi">HI <span id="askName2"></span> !</p>
+      <p class="line love">I LOVE YOU</p>
+      <p class="line q">Will you accept me? <span class="by">— <span id="askName1"></span></span></p>
     </div>
-  </div>
-</div>
-
+    <div class="btn-row" id="btnRow">
+      <button id="btnYes" class="btn btn-yes">Yes</button>
+      <button id="btnNo" class="btn btn-no">No</button>
+    </div>
+  </section>
+ 
+  <section id="stageReveal" class="stage">
+    <p class="line reveal-line">I knew you'd say yes 💗</p>
+    <div class="comment-card" id="revealComment"></div>
+    <button id="btnSave" class="btn btn-primary">Save &amp; get link</button>
+    <div class="link-box hidden" id="linkBox">
+      <input id="linkOutput" readonly />
+      <button id="btnCopy" class="btn btn-secondary">Copy link</button>
+    </div>
+  </section>
+ 
+</main>
+ 
 <script>
-  // ========== STATE ==========
-  let userData = { yourName:'', loverName:'', comment:'' };
-
-  // ========== CHECK URL PARAMS (lover mode) ==========
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('mode') === 'lover') {
-    // Lover opened the shared link – go straight to lover screen
-    document.body.className = 'light';
-    document.getElementById('switchScreen').style.display = 'none';
-    document.getElementById('loverScreen').classList.add('active');
-    const lName = decodeURIComponent(params.get('to') || 'Love');
-    const lMsg  = decodeURIComponent(params.get('msg') || '');
-    document.getElementById('loverDisplayName').textContent = 'HI ! ' + lName;
-    document.getElementById('loverCommentDisplay').textContent = lMsg;
-    spawnHearts();
+(function(){
+  const $ = id => document.getElementById(id);
+  const stages = {
+    switchStage: $('stageSwitch'),
+    form: $('stageForm'),
+    ask: $('stageAsk'),
+    reveal: $('stageReveal')
+  };
+ 
+  function showStage(el){
+    Object.values(stages).forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+  }
+ 
+  // ---------- floating hearts ----------
+  const heartsWrap = $('heartsBg');
+  function spawnHeart(){
+    const h = document.createElement('span');
+    h.className = 'heart-particle';
+    h.textContent = Math.random() > .5 ? '♥' : '❤';
+    h.style.left = Math.random()*100 + 'vw';
+    h.style.fontSize = (0.8 + Math.random()*1.4) + 'rem';
+    const dur = 9 + Math.random()*10;
+    h.style.animationDuration = dur + 's';
+    heartsWrap.appendChild(h);
+    setTimeout(()=>h.remove(), dur*1000);
+  }
+  setInterval(spawnHeart, 700);
+  for(let i=0;i<6;i++) setTimeout(spawnHeart, i*300);
+ 
+  // ---------- gentle parallax "4D" tilt on headline text ----------
+  document.addEventListener('mousemove', (e)=>{
+    const nx = (e.clientX/window.innerWidth - .5);
+    const ny = (e.clientY/window.innerHeight - .5);
+    document.querySelectorAll('.line, .title-3d, .comment-card').forEach(el=>{
+      el.style.transform = `rotateX(${(-ny*8).toFixed(2)}deg) rotateY(${(nx*8).toFixed(2)}deg)`;
+    });
+  });
+ 
+  // ---------- data encode/decode for shareable link ----------
+  function encodeData(obj){
+    return btoa(encodeURIComponent(JSON.stringify(obj)));
+  }
+  function decodeData(str){
+    try{ return JSON.parse(decodeURIComponent(atob(str))); }
+    catch(e){ return null; }
+  }
+ 
+  let data = { n1:'', n2:'', c:'' };
+  let sharedView = false;
+ 
+  const hash = location.hash;
+  if(hash && hash.indexOf('#v=') === 0){
+    const parsed = decodeData(hash.slice(3));
+    if(parsed && parsed.n1 && parsed.n2){
+      data = parsed;
+      sharedView = true;
+    }
+  }
+ 
+  if(sharedView){
+    // shared link mode: jump straight to the ask stage, skip switch + form
+    document.body.classList.add('lights-on');
+    fillAskStage();
+    showStage(stages.ask);
   } else {
-    // Normal mode
-    document.getElementById('switchScreen').style.display = 'flex';
-    spawnStars();
-    spawnHearts();
-  }
-
-  // ========== SWITCH ==========
-  document.getElementById('mainSwitch').addEventListener('change', function() {
-    const label = document.getElementById('switchLabel');
-    if (this.checked) {
-      label.textContent = 'Switch is ON ✨';
-      setTimeout(() => {
-        document.getElementById('switchScreen').style.display = 'none';
-        document.body.classList.remove('dark');
-        document.body.classList.add('light');
-        document.getElementById('formScreen').classList.add('active');
-      }, 500);
-    } else {
-      label.textContent = 'Switch ON to Start';
+    // ---------- STAGE 1: switch ----------
+    const switchPlate = $('switchPlate');
+    function flipSwitch(){
+      if(document.body.classList.contains('lights-on')) return;
+      document.body.classList.add('lights-on');
+      switchPlate.setAttribute('aria-pressed','true');
+      setTimeout(()=>{ showStage(stages.form); }, 650);
     }
+    switchPlate.addEventListener('click', flipSwitch);
+    switchPlate.addEventListener('keydown', (e)=>{
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); flipSwitch(); }
+    });
+ 
+    // ---------- STAGE 2: form ----------
+    const inpName1 = $('inpName1'), inpName2 = $('inpName2'), inpComment = $('inpComment');
+    const btnNext = $('btnNext');
+    function validateForm(){
+      btnNext.disabled = !(inpName1.value.trim() && inpName2.value.trim());
+    }
+    [inpName1, inpName2].forEach(i => i.addEventListener('input', validateForm));
+ 
+    btnNext.addEventListener('click', ()=>{
+      data.n1 = inpName1.value.trim();
+      data.n2 = inpName2.value.trim();
+      data.c = inpComment.value.trim();
+      fillAskStage();
+      showStage(stages.ask);
+    });
+  }
+ 
+  function fillAskStage(){
+    $('askName1').textContent = data.n1 || 'someone who loves you';
+    $('askName2').textContent = data.n2 || 'you';
+  }
+ 
+  // ---------- STAGE 3: ask (yes / dodging no) ----------
+  const btnRow = $('btnRow');
+  const btnNo = $('btnNo');
+  const btnYes = $('btnYes');
+ 
+  function dodge(){
+    const rowRect = btnRow.getBoundingClientRect();
+    const btnRect = btnNo.getBoundingClientRect();
+    const maxX = Math.max(rowRect.width - btnRect.width, 40);
+    const maxY = Math.max(140, rowRect.height - btnRect.height);
+    const x = (Math.random() - 0.5) * maxX * 1.4;
+    const y = (Math.random() - 0.2) * maxY;
+    btnNo.style.position = 'relative';
+    btnNo.style.transition = 'transform .18s ease';
+    btnNo.style.transform = `translate(${x}px, ${y}px)`;
+  }
+  btnNo.addEventListener('mouseenter', dodge);
+  btnNo.addEventListener('click', (e)=>{ e.preventDefault(); dodge(); });
+  btnNo.addEventListener('touchstart', (e)=>{ e.preventDefault(); dodge(); }, {passive:false});
+ 
+  btnYes.addEventListener('click', ()=>{
+    $('revealComment').textContent = data.c && data.c.length
+      ? data.c
+      : 'You make every ordinary day feel like Valentine\'s Day.';
+    showStage(stages.reveal);
   });
-
-  // ========== START PROPOSAL ==========
-  function startProposal() {
-    const yn = document.getElementById('yourName').value.trim();
-    const ln = document.getElementById('loverName').value.trim();
-    const cm = document.getElementById('commentText').value.trim();
-    if (!ln) { document.getElementById('loverName').focus(); alert('Please enter your lover\'s name 💖'); return; }
-    userData = { yourName: yn, loverName: ln, comment: cm };
-    document.getElementById('displayName').textContent = 'HI ! ' + ln;
-    document.getElementById('commentDisplay').textContent = cm;
-    document.getElementById('formScreen').classList.remove('active');
-    setTimeout(() => document.getElementById('proposalScreen').classList.add('active'), 50);
-  }
-
-  // ========== YES CLICK (Owner) ==========
-  function clickYes() {
-    document.getElementById('propButtons').classList.add('hidden');
-    document.getElementById('resultBlock').classList.remove('hidden');
-    launchConfetti();
-  }
-
-  // ========== NO DODGE (Owner) ==========
-  function dodgeNo() {
-    const container = document.getElementById('propButtons');
-    const btn = document.getElementById('noBtn');
-    const maxX = Math.max(container.clientWidth - btn.offsetWidth, 10);
-    const maxY = 80;
-    btn.style.left = (Math.random() * maxX) + 'px';
-    btn.style.top  = (Math.random() * maxY - 20) + 'px';
-  }
-
-  // ========== YES CLICK (Lover) ==========
-  function loverClickYes() {
-    document.getElementById('loverButtons').classList.add('hidden');
-    document.getElementById('loverResultBlock').classList.remove('hidden');
-    launchConfetti();
-  }
-
-  // ========== NO DODGE (Lover) ==========
-  function loverDodgeNo() {
-    const container = document.getElementById('loverButtons');
-    const btn = document.getElementById('loverNoBtn');
-    const maxX = Math.max(container.clientWidth - btn.offsetWidth, 10);
-    btn.style.left = (Math.random() * maxX) + 'px';
-    btn.style.top  = (Math.random() * 60 - 20) + 'px';
-  }
-
-  // ========== GENERATE LINK ==========
-  function generateLink() {
-    const base = window.location.href.split('?')[0];
-    const url  = base
-      + '?mode=lover'
-      + '&to='  + encodeURIComponent(userData.loverName)
-      + '&msg=' + encodeURIComponent(userData.comment);
-    const anchor = document.getElementById('generatedLink');
-    anchor.href = url;
-    anchor.textContent = url;
-    document.getElementById('linkBox').style.display = 'block';
-  }
-
-  // ========== COPY LINK ==========
-  function copyLink() {
-    const url = document.getElementById('generatedLink').href;
-    navigator.clipboard.writeText(url).then(() => {
-      const btn = document.querySelector('.copy-btn');
-      btn.textContent = '✅ Copied!';
-      setTimeout(() => btn.textContent = '📋 Copy Link', 2000);
+ 
+  // ---------- STAGE 4: reveal + save link ----------
+  const btnSave = $('btnSave');
+  const linkBox = $('linkBox');
+  const linkOutput = $('linkOutput');
+  const btnCopy = $('btnCopy');
+ 
+  if(sharedView){
+    btnSave.style.display = 'none';
+  } else {
+    btnSave.addEventListener('click', ()=>{
+      const encoded = encodeData(data);
+      const url = location.origin + location.pathname + '#v=' + encoded;
+      linkOutput.value = url;
+      linkBox.classList.remove('hidden');
+      linkOutput.focus();
+      linkOutput.select();
+    });
+    btnCopy.addEventListener('click', ()=>{
+      linkOutput.select();
+      navigator.clipboard && navigator.clipboard.writeText(linkOutput.value).catch(()=>{
+        document.execCommand('copy');
+      });
+      btnCopy.textContent = 'Copied!';
+      setTimeout(()=> btnCopy.textContent = 'Copy link', 1500);
     });
   }
-
-  // ========== 3D MOUSE TILT ==========
-  document.addEventListener('mousemove', e => {
-    const xR = (e.clientX / window.innerWidth  - 0.5) * 22;
-    const yR = (e.clientY / window.innerHeight - 0.5) * 22;
-    document.querySelectorAll('.stage').forEach(s => {
-      if (s.closest('.screen.active') || s.classList.contains('active')) {
-        s.style.transform = `rotateX(${-yR}deg) rotateY(${xR}deg)`;
-      }
-    });
-    const blobs = document.querySelectorAll('.blob');
-    blobs.forEach((b,i) => {
-      const d = (i+1)*15;
-      b.style.transform = `translate(${-xR/22*d}px,${-yR/22*d}px)`;
-    });
-  });
-
-  // ========== FLOATING HEARTS ==========
-  const heartEmojis = ['💖','💕','💗','💓','❤️','💝'];
-  function spawnHearts() {
-    const container = document.getElementById('bgHearts');
-    function spawn() {
-      const h = document.createElement('div');
-      h.className = 'bg-heart';
-      h.textContent = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
-      h.style.left = Math.random()*100+'vw';
-      const depth = Math.random();
-      const size = 14 + depth*26;
-      const dur  = 12 - depth*6;
-      h.style.fontSize = size+'px';
-      h.style.animationDuration = dur+'s';
-      h.style.filter = `blur(${(1-depth)*2.5}px)`;
-      container.appendChild(h);
-      setTimeout(()=>h.remove(), dur*1000);
-    }
-    for(let i=0;i<8;i++) setTimeout(spawn, i*300);
-    setInterval(spawn, 600);
-  }
-
-  // ========== STARS (dark mode only) ==========
-  function spawnStars() {
-    const container = document.getElementById('stars');
-    for (let i = 0; i < 80; i++) {
-      const s = document.createElement('div');
-      s.className = 'star';
-      const size = 1 + Math.random()*2;
-      s.style.cssText = `
-        width:${size}px; height:${size}px;
-        top:${Math.random()*100}vh; left:${Math.random()*100}vw;
-        animation-duration:${2+Math.random()*3}s;
-        animation-delay:${Math.random()*3}s;
-        opacity:0.3;
-      `;
-      container.appendChild(s);
-    }
-  }
-
-  // ========== CONFETTI ==========
-  const confettiEmojis = ['🎉','💖','✨','💕','🎊','💗','⭐'];
-  function launchConfetti() {
-    for (let i = 0; i < 55; i++) {
-      setTimeout(() => {
-        const p = document.createElement('div');
-        p.className = 'confetti';
-        p.textContent = confettiEmojis[Math.floor(Math.random()*confettiEmojis.length)];
-        p.style.left = Math.random()*100+'vw';
-        const dur = 2+Math.random()*2;
-        p.style.animationDuration = dur+'s';
-        p.style.fontSize = (14+Math.random()*18)+'px';
-        document.body.appendChild(p);
-        setTimeout(()=>p.remove(), dur*1000);
-      }, i*25);
-    }
-  }
+})();
 </script>
 </body>
 </html>
