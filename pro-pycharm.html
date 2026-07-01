@@ -1,0 +1,661 @@
+ML
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Love Proposal 💖</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-dark: #0d0d1a;
+    --bg-card-dark: rgba(20, 10, 35, 0.85);
+    --accent: #ff5c8d;
+    --accent2: #c2185b;
+    --text-dark: #f0d6e8;
+    --border-dark: rgba(255,92,141,0.3);
+
+    --bg-light: #fff0f5;
+    --bg-card-light: rgba(255,255,255,0.75);
+    --text-light: #c2185b;
+    --border-light: rgba(214,51,108,0.3);
+  }
+
+  html, body {
+    height: 100%;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 1s ease;
+    position: relative;
+    perspective: 1200px;
+  }
+
+  body.dark {
+    background: radial-gradient(ellipse at 30% 20%, #1a0a2e 0%, #0d0d1a 60%, #0a0014 100%);
+  }
+  body.light {
+    background: radial-gradient(-45deg, #ff9a9e, #fecfef, #fad0c4, #ffdde1);
+    animation: gradientShift 10s ease infinite;
+    background-size: 300% 300%;
+  }
+  @keyframes gradientShift {
+    0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%}
+  }
+
+  /* DEPTH BLOBS */
+  .blob { position:fixed; border-radius:50%; filter:blur(60px); pointer-events:none; transition:all 1s ease; }
+  .blob1 { width:350px; height:350px; top:5%; left:5%; }
+  .blob2 { width:250px; height:250px; bottom:8%; right:8%; }
+  .blob3 { width:200px; height:200px; top:55%; left:65%; }
+  body.dark .blob1 { background:rgba(120,0,80,0.4); }
+  body.dark .blob2 { background:rgba(60,0,100,0.3); }
+  body.dark .blob3 { background:rgba(180,20,100,0.2); }
+  body.light .blob1 { background:rgba(255,100,150,0.3); }
+  body.light .blob2 { background:rgba(255,200,230,0.4); }
+  body.light .blob3 { background:rgba(255,150,180,0.25); }
+
+  #bgHearts { position:fixed; inset:0; pointer-events:none; z-index:0; }
+  .bg-heart {
+    position:absolute; bottom:-10%; opacity:0.7;
+    animation:floatUp linear infinite;
+    pointer-events:none;
+  }
+  @keyframes floatUp {
+    0%{transform:translateY(0) rotate(0deg);opacity:0}
+    10%{opacity:0.8} 90%{opacity:0.8}
+    100%{transform:translateY(-115vh) rotate(360deg);opacity:0}
+  }
+
+  /* ===== SWITCH WRAPPER ===== */
+  #switchWrap {
+    display:flex; flex-direction:column; align-items:center; gap:18px;
+    position:relative; z-index:10;
+  }
+  .switch-label {
+    color:#ff5c8d; font-size:14px; letter-spacing:2px; text-transform:uppercase;
+    opacity:0.8; font-weight:600;
+  }
+
+  /* 3D TOGGLE SWITCH */
+  .toggle-3d {
+    width:90px; height:44px; position:relative; cursor:pointer;
+    transform-style:preserve-3d;
+  }
+  .toggle-3d input { display:none; }
+  .toggle-track {
+    width:100%; height:100%; border-radius:30px; position:relative;
+    background:linear-gradient(145deg,#1a0030,#2d0050);
+    border:2px solid rgba(255,92,141,0.4);
+    box-shadow:0 8px 20px rgba(0,0,0,0.6), inset 0 2px 4px rgba(0,0,0,0.5);
+    transition:all 0.5s ease;
+    transform-style:preserve-3d;
+  }
+  .toggle-3d input:checked ~ .toggle-track {
+    background:linear-gradient(145deg,#ff5c8d,#c2185b);
+    border-color:rgba(255,180,210,0.6);
+    box-shadow:0 8px 25px rgba(255,92,141,0.5), inset 0 2px 4px rgba(0,0,0,0.3), 0 0 30px rgba(255,92,141,0.3);
+  }
+  .toggle-thumb {
+    width:34px; height:34px; border-radius:50%;
+    background:linear-gradient(145deg,#ffffff,#e0e0e0);
+    position:absolute; top:3px; left:4px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.4), 0 1px 3px rgba(0,0,0,0.2);
+    transition:transform 0.45s cubic-bezier(0.175,0.885,0.32,1.275);
+    transform:translateZ(6px);
+  }
+  .toggle-3d input:checked ~ .toggle-track .toggle-thumb {
+    transform:translateX(46px) translateZ(6px);
+    background:linear-gradient(145deg,#fff,#ffd6e8);
+  }
+  .toggle-track::before {
+    content:'OFF'; position:absolute; right:9px; top:50%;
+    transform:translateY(-50%); font-size:10px; font-weight:700;
+    color:rgba(255,255,255,0.5); letter-spacing:1px;
+    transition:opacity 0.3s;
+  }
+  .toggle-3d input:checked ~ .toggle-track::before { content:'ON'; left:9px; right:auto; color:rgba(255,255,255,0.9); }
+
+  /* ===== SCREENS ===== */
+  .screen {
+    display:none; position:relative; z-index:5;
+    animation:screenIn 0.7s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  .screen.active { display:flex; flex-direction:column; align-items:center; }
+  @keyframes screenIn {
+    0%{transform:translateZ(-300px) rotateX(20deg) scale(0.7);opacity:0}
+    100%{transform:translateZ(0) rotateX(0) scale(1);opacity:1}
+  }
+
+  /* ===== CARD ===== */
+  .card {
+    background:var(--bg-card-dark);
+    backdrop-filter:blur(20px) saturate(160%);
+    -webkit-backdrop-filter:blur(20px) saturate(160%);
+    border:1px solid var(--border-dark);
+    border-radius:24px; padding:48px 44px;
+    text-align:center; max-width:440px; width:90vw;
+    box-shadow:0 20px 60px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.05), inset 0 1px 0 rgba(255,255,255,0.1);
+    transform-style:preserve-3d;
+    transition:background 1s, border 1s;
+  }
+  body.light .card {
+    background:var(--bg-card-light);
+    border-color:var(--border-light);
+    box-shadow:0 20px 60px rgba(214,51,108,0.2), inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+
+  /* ===== TYPOGRAPHY ===== */
+  h1 {
+    font-size:28px; font-weight:800; letter-spacing:0.5px;
+    background:linear-gradient(90deg,#ff5c8d,#ff9fc3,#ff5c8d);
+    background-size:200% auto;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:shine 3s linear infinite;
+    margin-bottom:8px; transform:translateZ(40px);
+  }
+  @keyframes shine {
+    0%{background-position:0% center} 100%{background-position:200% center}
+  }
+
+  .subtitle {
+    font-size:16px; transform:translateZ(30px);
+    transition:color 1s;
+  }
+  body.dark .subtitle { color:rgba(240,214,232,0.7); }
+  body.light .subtitle { color:#d6336c; }
+
+  .heart-icon {
+    font-size:54px; display:inline-block;
+    transform:translateZ(60px);
+    animation:beat 1s infinite;
+    filter:drop-shadow(0 10px 15px rgba(214,51,108,0.5));
+    margin-bottom:12px;
+  }
+  @keyframes beat {
+    0%,100%{transform:translateZ(60px) scale(1)}
+    50%{transform:translateZ(90px) scale(1.25)}
+  }
+
+  /* ===== FORM ===== */
+  .form-group { margin:14px 0; text-align:left; }
+  .form-group label {
+    display:block; font-size:12px; font-weight:700;
+    letter-spacing:1.5px; text-transform:uppercase;
+    margin-bottom:6px; color:#ff5c8d;
+  }
+  .form-group input, .form-group textarea {
+    width:100%; padding:12px 16px;
+    border-radius:12px; border:1.5px solid rgba(255,92,141,0.3);
+    font-size:15px; font-family:inherit; outline:none;
+    transition:border 0.3s, box-shadow 0.3s, background 1s, color 1s;
+    resize:none;
+  }
+  body.dark .form-group input,
+  body.dark .form-group textarea {
+    background:rgba(255,255,255,0.07); color:#f0d6e8;
+  }
+  body.light .form-group input,
+  body.light .form-group textarea {
+    background:rgba(255,255,255,0.8); color:#c2185b;
+  }
+  .form-group input:focus, .form-group textarea:focus {
+    border-color:#ff5c8d;
+    box-shadow:0 0 0 3px rgba(255,92,141,0.2);
+  }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder { color:rgba(200,150,180,0.5); }
+
+  /* ===== BUTTONS ===== */
+  .btn-primary {
+    width:100%; padding:14px; margin-top:20px;
+    background:linear-gradient(135deg,#ff7aa2,#ff5c8d 60%,#d6336c);
+    color:#fff; font-size:17px; font-weight:700;
+    border:none; border-radius:30px; cursor:pointer;
+    transform-style:preserve-3d; transform:translateZ(50px);
+    box-shadow:0 6px 0 #8f0030, 0 10px 20px rgba(255,92,141,0.4);
+    transition:transform 0.15s, box-shadow 0.15s;
+    letter-spacing:0.5px;
+    animation:pulseGlow 1.8s ease infinite;
+  }
+  @keyframes pulseGlow {
+    0%,100%{box-shadow:0 6px 0 #8f0030,0 10px 20px rgba(255,92,141,0.4),0 0 0 0 rgba(255,92,141,0.5)}
+    50%{box-shadow:0 6px 0 #8f0030,0 10px 20px rgba(255,92,141,0.4),0 0 0 14px rgba(255,92,141,0)}
+  }
+  .btn-primary:hover { transform:translateZ(50px) translateY(-3px) scale(1.04); }
+  .btn-primary:active { transform:translateZ(50px) translateY(2px) scale(0.97); box-shadow:0 2px 0 #8f0030,0 4px 8px rgba(255,92,141,0.3); }
+
+  .btn-generate {
+    padding:12px 28px; margin-top:16px;
+    background:linear-gradient(135deg,#a855f7,#7c3aed);
+    color:#fff; font-size:15px; font-weight:700;
+    border:none; border-radius:30px; cursor:pointer;
+    box-shadow:0 5px 0 #4c1d95, 0 10px 20px rgba(124,58,237,0.4);
+    transition:all 0.15s;
+    animation:pulseGlowPurple 1.8s ease infinite;
+  }
+  @keyframes pulseGlowPurple {
+    0%,100%{box-shadow:0 5px 0 #4c1d95,0 10px 20px rgba(124,58,237,0.4),0 0 0 0 rgba(168,85,247,0.5)}
+    50%{box-shadow:0 5px 0 #4c1d95,0 10px 20px rgba(124,58,237,0.4),0 0 0 14px rgba(168,85,247,0)}
+  }
+  .btn-generate:hover { transform:translateY(-3px) scale(1.06); }
+  .btn-generate:active { transform:translateY(2px) scale(0.97); }
+
+  /* ===== YES/NO BUTTONS ===== */
+  .proposal-buttons { position:relative; height:80px; margin-top:28px; }
+  #yesBtn {
+    padding:13px 32px; font-size:17px; font-weight:700;
+    border:none; border-radius:30px; cursor:pointer;
+    background:linear-gradient(135deg,#ff7aa2,#ff5c8d 60%,#d6336c);
+    color:#fff; position:relative;
+    box-shadow:0 6px 0 #8f0030,0 10px 18px rgba(255,92,141,0.5);
+    animation:pulseGlow 1.6s ease infinite;
+    transition:transform 0.15s, box-shadow 0.15s;
+  }
+  #yesBtn:hover { transform:translateY(-4px) rotateX(8deg) scale(1.08); }
+  #yesBtn:active { transform:translateY(2px) scale(0.96); box-shadow:0 2px 0 #8f0030,0 4px 8px rgba(255,92,141,0.4); }
+
+  #noBtn {
+    padding:13px 32px; font-size:17px; font-weight:700;
+    border:none; border-radius:30px; cursor:pointer;
+    position:absolute; top:0; left:155px;
+    background:linear-gradient(135deg,#2a2a3e,#1a1a2e);
+    color:#aaa;
+    box-shadow:0 4px 0 #000,0 8px 14px rgba(0,0,0,0.4);
+    transition:top 0.3s ease, left 0.3s ease, transform 0.15s;
+  }
+  body.light #noBtn {
+    background:linear-gradient(135deg,#e0e0e0,#ccc);
+    color:#666;
+  }
+  #noBtn:hover { transform:scale(1.05); }
+
+  /* ===== PROPOSAL TEXT ===== */
+  .proposal-name {
+    font-size:30px; font-weight:900; margin-bottom:6px;
+    transform:translateZ(50px);
+    background:linear-gradient(90deg,#ff5c8d,#ff9fc3,#ff5c8d);
+    background-size:200% auto;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:shine 3s linear infinite;
+  }
+  .proposal-text {
+    font-size:19px; font-weight:600; margin:8px 0;
+    transform:translateZ(35px);
+    transition:color 1s;
+  }
+  body.dark .proposal-text { color:#f0d6e8; }
+  body.light .proposal-text { color:#c2185b; }
+
+  /* ===== RESULT ===== */
+  #resultText {
+    font-size:22px; font-weight:800; color:#ff5c8d;
+    margin:12px 0; transform:translateZ(50px);
+    animation:popIn 0.6s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  @keyframes popIn {
+    0%{opacity:0;transform:translateZ(50px) scale(0.3) rotate(-10deg)}
+    60%{opacity:1;transform:translateZ(50px) scale(1.1) rotate(3deg)}
+    100%{opacity:1;transform:translateZ(50px) scale(1) rotate(0)}
+  }
+  #commentDisplay {
+    font-size:15px; padding:14px 18px;
+    border-radius:14px; margin:10px 0;
+    border:1px solid rgba(255,92,141,0.3);
+    font-style:italic; line-height:1.6;
+    transition:background 1s, color 1s;
+    animation:popIn 0.6s ease 0.2s both;
+  }
+  body.dark #commentDisplay { background:rgba(255,92,141,0.1); color:#f0d6e8; }
+  body.light #commentDisplay { background:rgba(255,92,141,0.08); color:#c2185b; }
+
+  /* ===== LINK BOX ===== */
+  #linkBox {
+    display:none; margin-top:16px; padding:14px;
+    border-radius:14px; border:1.5px solid rgba(168,85,247,0.4);
+    font-size:12px; word-break:break-all;
+    transition:background 1s, color 1s;
+    animation:popIn 0.5s ease;
+  }
+  body.dark #linkBox { background:rgba(124,58,237,0.15); color:#d8b4fe; }
+  body.light #linkBox { background:rgba(168,85,247,0.1); color:#7c3aed; }
+  #linkBox a { color:inherit; text-decoration:underline; }
+  .copy-btn {
+    margin-top:10px; padding:8px 18px; font-size:13px; font-weight:700;
+    background:rgba(168,85,247,0.3); color:#d8b4fe;
+    border:1px solid rgba(168,85,247,0.5); border-radius:20px;
+    cursor:pointer; transition:all 0.2s;
+  }
+  .copy-btn:hover { background:rgba(168,85,247,0.5); }
+
+  /* ===== SWITCH SCREEN LAYOUT ===== */
+  #switchScreen {
+    display:flex; flex-direction:column; align-items:center;
+    gap:24px; position:relative; z-index:10;
+    animation:screenIn 0.8s cubic-bezier(0.175,0.885,0.32,1.275);
+  }
+  .brand {
+    font-size:13px; letter-spacing:3px; text-transform:uppercase;
+    color:rgba(255,92,141,0.6); font-weight:600; margin-bottom:4px;
+  }
+  #mainTitle {
+    font-size:36px; font-weight:900;
+    background:linear-gradient(90deg,#ff5c8d,#a855f7,#ff5c8d);
+    background-size:200% auto;
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation:shine 3s linear infinite;
+    text-align:center; line-height:1.2;
+  }
+  .tagline { color:rgba(240,214,232,0.5); font-size:13px; letter-spacing:1px; }
+
+  /* ===== STAGE (3D tilt container) ===== */
+  .stage {
+    transform-style:preserve-3d;
+    transition:transform 0.1s ease-out;
+  }
+
+  /* ===== CONFETTI ===== */
+  .confetti {
+    position:fixed; top:-10%; font-size:20px;
+    animation:confettiFall linear forwards;
+    pointer-events:none; z-index:999;
+  }
+  @keyframes confettiFall {
+    0%{transform:translateY(0) rotate(0deg) rotateY(0deg);opacity:1}
+    100%{transform:translateY(110vh) rotate(540deg) rotateY(360deg);opacity:0.9}
+  }
+
+  .hidden { display:none !important; }
+
+  /* STARS in dark background */
+  .star {
+    position:fixed; border-radius:50%;
+    background:white; pointer-events:none;
+    animation:twinkle ease infinite;
+  }
+  @keyframes twinkle {
+    0%,100%{opacity:0.2;transform:scale(1)}
+    50%{opacity:1;transform:scale(1.5)}
+  }
+</style>
+</head>
+<body class="dark">
+
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+<div class="blob blob3"></div>
+<div id="bgHearts"></div>
+<div id="stars"></div>
+
+<!-- SWITCH SCREEN -->
+<div id="switchScreen">
+  <div class="brand">💖 Love Proposal</div>
+  <div id="mainTitle">Create Your<br>Love Story</div>
+  <div class="tagline">Turn on to begin your journey</div>
+  <div id="switchWrap">
+    <label class="toggle-3d">
+      <input type="checkbox" id="mainSwitch">
+      <div class="toggle-track">
+        <div class="toggle-thumb"></div>
+      </div>
+    </label>
+    <div class="switch-label" id="switchLabel">Switch ON to Start</div>
+  </div>
+</div>
+
+<!-- FORM SCREEN -->
+<div class="screen stage" id="formScreen">
+  <div class="card">
+    <div class="heart-icon">💖</div>
+    <h1>Your Love Story</h1>
+    <p class="subtitle" style="margin-bottom:22px;">Fill in the details below</p>
+    <div class="form-group">
+      <label>Your Name</label>
+      <input type="text" id="yourName" placeholder="Enter your name...">
+    </div>
+    <div class="form-group">
+      <label>Lover's Name</label>
+      <input type="text" id="loverName" placeholder="Enter their name...">
+    </div>
+    <div class="form-group">
+      <label>Your Special Message</label>
+      <textarea id="commentText" rows="3" placeholder="Write something sweet..."></textarea>
+    </div>
+    <button class="btn-primary" onclick="startProposal()">💕 Start</button>
+  </div>
+</div>
+
+<!-- PROPOSAL SCREEN -->
+<div class="screen stage" id="proposalScreen">
+  <div class="card">
+    <div class="heart-icon">💖</div>
+    <div class="proposal-name" id="displayName">Lover</div>
+    <div class="proposal-text">I Love You 💕</div>
+    <div class="proposal-text">Will you accept me?</div>
+    <div class="proposal-buttons" id="propButtons">
+      <button id="yesBtn" onclick="clickYes()">Yes 😍</button>
+      <button id="noBtn" onclick="dodgeNo()">No 😢</button>
+    </div>
+    <div id="resultBlock" class="hidden">
+      <div id="resultText">I know you will love me too! 💕</div>
+      <div id="commentDisplay"></div>
+      <button class="btn-generate" onclick="generateLink()">🔗 Generate Shareable Link</button>
+      <div id="linkBox">
+        <div style="font-weight:700;margin-bottom:6px;">🔗 Share this link with your lover:</div>
+        <a id="generatedLink" href="#" target="_blank"></a>
+        <div><button class="copy-btn" onclick="copyLink()">📋 Copy Link</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LOVER SCREEN (shown when opened via shared link) -->
+<div class="screen stage" id="loverScreen">
+  <div class="card">
+    <div class="heart-icon">💖</div>
+    <div class="proposal-name" id="loverDisplayName">Lover</div>
+    <div class="proposal-text">I Love You 💕</div>
+    <div class="proposal-text">Will you accept me?</div>
+    <div class="proposal-buttons" id="loverButtons">
+      <button id="loverYesBtn" onclick="loverClickYes()">Yes 😍</button>
+      <button id="loverNoBtn" onclick="loverDodgeNo()">No 😢</button>
+    </div>
+    <div id="loverResultBlock" class="hidden">
+      <div id="loverResultText">I know you will accept me! 💕</div>
+      <div id="loverCommentDisplay"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ========== STATE ==========
+  let userData = { yourName:'', loverName:'', comment:'' };
+
+  // ========== CHECK URL PARAMS (lover mode) ==========
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('mode') === 'lover') {
+    // Lover opened the shared link – go straight to lover screen
+    document.body.className = 'light';
+    document.getElementById('switchScreen').style.display = 'none';
+    document.getElementById('loverScreen').classList.add('active');
+    const lName = decodeURIComponent(params.get('to') || 'Love');
+    const lMsg  = decodeURIComponent(params.get('msg') || '');
+    document.getElementById('loverDisplayName').textContent = 'HI ! ' + lName;
+    document.getElementById('loverCommentDisplay').textContent = lMsg;
+    spawnHearts();
+  } else {
+    // Normal mode
+    document.getElementById('switchScreen').style.display = 'flex';
+    spawnStars();
+    spawnHearts();
+  }
+
+  // ========== SWITCH ==========
+  document.getElementById('mainSwitch').addEventListener('change', function() {
+    const label = document.getElementById('switchLabel');
+    if (this.checked) {
+      label.textContent = 'Switch is ON ✨';
+      setTimeout(() => {
+        document.getElementById('switchScreen').style.display = 'none';
+        document.body.classList.remove('dark');
+        document.body.classList.add('light');
+        document.getElementById('formScreen').classList.add('active');
+      }, 500);
+    } else {
+      label.textContent = 'Switch ON to Start';
+    }
+  });
+
+  // ========== START PROPOSAL ==========
+  function startProposal() {
+    const yn = document.getElementById('yourName').value.trim();
+    const ln = document.getElementById('loverName').value.trim();
+    const cm = document.getElementById('commentText').value.trim();
+    if (!ln) { document.getElementById('loverName').focus(); alert('Please enter your lover\'s name 💖'); return; }
+    userData = { yourName: yn, loverName: ln, comment: cm };
+    document.getElementById('displayName').textContent = 'HI ! ' + ln;
+    document.getElementById('commentDisplay').textContent = cm;
+    document.getElementById('formScreen').classList.remove('active');
+    setTimeout(() => document.getElementById('proposalScreen').classList.add('active'), 50);
+  }
+
+  // ========== YES CLICK (Owner) ==========
+  function clickYes() {
+    document.getElementById('propButtons').classList.add('hidden');
+    document.getElementById('resultBlock').classList.remove('hidden');
+    launchConfetti();
+  }
+
+  // ========== NO DODGE (Owner) ==========
+  function dodgeNo() {
+    const container = document.getElementById('propButtons');
+    const btn = document.getElementById('noBtn');
+    const maxX = Math.max(container.clientWidth - btn.offsetWidth, 10);
+    const maxY = 80;
+    btn.style.left = (Math.random() * maxX) + 'px';
+    btn.style.top  = (Math.random() * maxY - 20) + 'px';
+  }
+
+  // ========== YES CLICK (Lover) ==========
+  function loverClickYes() {
+    document.getElementById('loverButtons').classList.add('hidden');
+    document.getElementById('loverResultBlock').classList.remove('hidden');
+    launchConfetti();
+  }
+
+  // ========== NO DODGE (Lover) ==========
+  function loverDodgeNo() {
+    const container = document.getElementById('loverButtons');
+    const btn = document.getElementById('loverNoBtn');
+    const maxX = Math.max(container.clientWidth - btn.offsetWidth, 10);
+    btn.style.left = (Math.random() * maxX) + 'px';
+    btn.style.top  = (Math.random() * 60 - 20) + 'px';
+  }
+
+  // ========== GENERATE LINK ==========
+  function generateLink() {
+    const base = window.location.href.split('?')[0];
+    const url  = base
+      + '?mode=lover'
+      + '&to='  + encodeURIComponent(userData.loverName)
+      + '&msg=' + encodeURIComponent(userData.comment);
+    const anchor = document.getElementById('generatedLink');
+    anchor.href = url;
+    anchor.textContent = url;
+    document.getElementById('linkBox').style.display = 'block';
+  }
+
+  // ========== COPY LINK ==========
+  function copyLink() {
+    const url = document.getElementById('generatedLink').href;
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.querySelector('.copy-btn');
+      btn.textContent = '✅ Copied!';
+      setTimeout(() => btn.textContent = '📋 Copy Link', 2000);
+    });
+  }
+
+  // ========== 3D MOUSE TILT ==========
+  document.addEventListener('mousemove', e => {
+    const xR = (e.clientX / window.innerWidth  - 0.5) * 22;
+    const yR = (e.clientY / window.innerHeight - 0.5) * 22;
+    document.querySelectorAll('.stage').forEach(s => {
+      if (s.closest('.screen.active') || s.classList.contains('active')) {
+        s.style.transform = `rotateX(${-yR}deg) rotateY(${xR}deg)`;
+      }
+    });
+    const blobs = document.querySelectorAll('.blob');
+    blobs.forEach((b,i) => {
+      const d = (i+1)*15;
+      b.style.transform = `translate(${-xR/22*d}px,${-yR/22*d}px)`;
+    });
+  });
+
+  // ========== FLOATING HEARTS ==========
+  const heartEmojis = ['💖','💕','💗','💓','❤️','💝'];
+  function spawnHearts() {
+    const container = document.getElementById('bgHearts');
+    function spawn() {
+      const h = document.createElement('div');
+      h.className = 'bg-heart';
+      h.textContent = heartEmojis[Math.floor(Math.random()*heartEmojis.length)];
+      h.style.left = Math.random()*100+'vw';
+      const depth = Math.random();
+      const size = 14 + depth*26;
+      const dur  = 12 - depth*6;
+      h.style.fontSize = size+'px';
+      h.style.animationDuration = dur+'s';
+      h.style.filter = `blur(${(1-depth)*2.5}px)`;
+      container.appendChild(h);
+      setTimeout(()=>h.remove(), dur*1000);
+    }
+    for(let i=0;i<8;i++) setTimeout(spawn, i*300);
+    setInterval(spawn, 600);
+  }
+
+  // ========== STARS (dark mode only) ==========
+  function spawnStars() {
+    const container = document.getElementById('stars');
+    for (let i = 0; i < 80; i++) {
+      const s = document.createElement('div');
+      s.className = 'star';
+      const size = 1 + Math.random()*2;
+      s.style.cssText = `
+        width:${size}px; height:${size}px;
+        top:${Math.random()*100}vh; left:${Math.random()*100}vw;
+        animation-duration:${2+Math.random()*3}s;
+        animation-delay:${Math.random()*3}s;
+        opacity:0.3;
+      `;
+      container.appendChild(s);
+    }
+  }
+
+  // ========== CONFETTI ==========
+  const confettiEmojis = ['🎉','💖','✨','💕','🎊','💗','⭐'];
+  function launchConfetti() {
+    for (let i = 0; i < 55; i++) {
+      setTimeout(() => {
+        const p = document.createElement('div');
+        p.className = 'confetti';
+        p.textContent = confettiEmojis[Math.floor(Math.random()*confettiEmojis.length)];
+        p.style.left = Math.random()*100+'vw';
+        const dur = 2+Math.random()*2;
+        p.style.animationDuration = dur+'s';
+        p.style.fontSize = (14+Math.random()*18)+'px';
+        document.body.appendChild(p);
+        setTimeout(()=>p.remove(), dur*1000);
+      }, i*25);
+    }
+  }
+</script>
+</body>
+</html>
+ 
