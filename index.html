@@ -1,9 +1,10 @@
+TML
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
-<title>code-x</title>
+<title>flip the switch</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -233,9 +234,16 @@
     transform:rotateX(4deg);
   }
   .link-box{
-    display:flex; gap:.6rem; margin-top:1.4rem; width:100%; flex-wrap:wrap; justify-content:center;
+    display:flex; flex-direction:column; align-items:center;
+    gap:.5rem; margin-top:1.4rem; width:100%;
   }
   .link-box.hidden{ display:none; }
+  .link-caption{
+    font-size:.8rem; font-weight:500; color:var(--rose-deep); margin:0;
+  }
+  .link-row{
+    display:flex; gap:.6rem; width:100%; flex-wrap:wrap; justify-content:center;
+  }
   #linkOutput{
     flex:1; min-width:200px; padding:.7rem .9rem; border-radius:10px;
     border:1.5px solid #f1c1d4; font-family:var(--body); font-size:.85rem;
@@ -296,8 +304,11 @@
     <div class="comment-card" id="revealComment"></div>
     <button id="btnSave" class="btn btn-primary">Save &amp; get link</button>
     <div class="link-box hidden" id="linkBox">
-      <input id="linkOutput" readonly />
-      <button id="btnCopy" class="btn btn-secondary">Copy link</button>
+      <p class="link-caption" id="linkCaption"></p>
+      <div class="link-row">
+        <input id="linkOutput" readonly />
+        <button id="btnCopy" class="btn btn-secondary">Copy link</button>
+      </div>
     </div>
   </section>
  
@@ -355,9 +366,21 @@
   let data = { n1:'', n2:'', c:'' };
   let sharedView = false;
  
+  function slugify(name){
+    return (name || 'love')
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '') || 'love';
+  }
+  function shortToken(){
+    return Math.random().toString(36).slice(2, 8);
+  }
+ 
   const hash = location.hash;
-  if(hash && hash.indexOf('#v=') === 0){
-    const parsed = decodeData(hash.slice(3));
+  if(hash && hash.length > 1 && hash.indexOf('=') !== -1){
+    const encodedPart = hash.substring(hash.indexOf('=') + 1);
+    const parsed = decodeData(encodedPart);
     if(parsed && parsed.n1 && parsed.n2){
       data = parsed;
       sharedView = true;
@@ -443,8 +466,11 @@
   } else {
     btnSave.addEventListener('click', ()=>{
       const encoded = encodeData(data);
-      const url = location.origin + location.pathname + '#v=' + encoded;
+      const slug = slugify(data.n2);
+      const token = shortToken();
+      const url = location.origin + location.pathname + '#' + slug + '-' + token + '=' + encoded;
       linkOutput.value = url;
+      $('linkCaption').textContent = 'Your private link for ' + (data.n2 || 'them') + ':';
       linkBox.classList.remove('hidden');
       linkOutput.focus();
       linkOutput.select();
